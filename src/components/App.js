@@ -10,6 +10,7 @@ import {CurrentUserContext} from '../context/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
+import AuthForm from './AuthForm';
 
 function App() {
 
@@ -163,15 +164,17 @@ function App() {
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <Header/>
-            <Main onEditProfile={openProfilePopup}
-                  onAddPlace={openPlacePopup}
-                  onEditAvatar={openAvatarPopup}
-                  onCardClick={changeSelectedCard}
-                  cards={cards}
-                  onCardLike={handleCardLike}
-                  onCardDelete={handleDeleteConfirm}
-            />
-            <Footer/>
+            <AuthForm  title="Регистрация" btnName="Зарегистрироваться"/>
+            {/*<AuthForm  title="Вход" btnName="Войти"/>*/}
+            {/*<Main onEditProfile={openProfilePopup}*/}
+            {/*      onAddPlace={openPlacePopup}*/}
+            {/*      onEditAvatar={openAvatarPopup}*/}
+            {/*      onCardClick={changeSelectedCard}*/}
+            {/*      cards={cards}*/}
+            {/*      onCardLike={handleCardLike}*/}
+            {/*      onCardDelete={handleDeleteConfirm}*/}
+            {/*/>*/}
+            <Footer />
 
             <EditProfilePopup isOpen={isEditProfilePopupOpen}
                               onClose={closeAllPopups}

@@ -58,3 +58,12 @@
 
 @import url(./blocks/fade/_type/_in/fade_type_in.css);
 @import url(./blocks/fade/_type/_out/fade_type_out.css);
+
+@import url(./blocks/auth/auth.css);
+@import url(./blocks/auth/__form/auth__form.css);
+@import url(./blocks/auth/__title/auth__title.css);
+@import url(./blocks/auth/__input/auth__input.css);
+@import url(./blocks/auth/__button-container/auth__button-container.css);
+@import url(./blocks/auth/__link/auth__link.css);
+@import url(./blocks/auth/__signin/auth__signin.css);
+@import url(./blocks/auth/__login-link/auth__login-link.css);
