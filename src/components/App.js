@@ -10,11 +10,15 @@ import {CurrentUserContext} from '../context/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-import AuthForm from './AuthForm';
-import AuthPopup from './AuthPopup';
+import InfoTooltip from './InfoTooltip';
+import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
+import auth from '../auth';
+import Register from './Register';
+import Login from './Login';
 
 function App() {
-
+    const history = useHistory();
     const [currentUser, setCurrentUser] = useState({
         name: 'Alex',
         about: 'me',
@@ -25,11 +29,20 @@ function App() {
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+    const [isAuthPopupOpen, setIsAuthPopupOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState({});
     const [isDeleteCardPopup, setIsDeleteCardPopup] = useState({
         show: false,
         card: null
     });
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [authStatus, setAuthStatus] = useState(false);
+    const [regStatus, setRegStatus] = useState('');
+    const [userName, setUserName] = useState('');
+
+    function handleRegStatus(status) {
+        setRegStatus(status);
+    }
 
     useEffect(() => {
         Promise.all([api.getInitialProfileInfo(), api.getInitialCards()])
@@ -115,6 +128,11 @@ function App() {
         setSelectedCard(card);
     }
 
+    function openAuthPopup(bool) {
+        setAuthStatus(bool);
+        setIsAuthPopupOpen(true);
+    }
+
     function closeAllPopups() {
         setIsEditProfilePopupOpen(false);
         setIsEditAvatarPopupOpen(false);
@@ -124,6 +142,7 @@ function App() {
             card: null
         });
         setSelectedCard({});
+        setIsAuthPopupOpen(false);
     }
 
     function handleDeleteConfirm(card) {
@@ -162,23 +181,85 @@ function App() {
         return () => document.removeEventListener('keydown', handleEscapeKey)
     }, [])
 
+    function handleSignup(email, password) {
+        auth.register(email, password)
+            .then((res) => {
+                openAuthPopup(true);
+                history.push('/sign-in');
+            })
+            .catch((err) => {
+                console.log(err)
+                openAuthPopup(false);
+            });
+    }
+
+    function handleSignin(email, password) {
+        auth.authorize(email, password)
+            .then((data) => {
+                if (data.token) {
+                    localStorage.setItem('jwt', data.token);
+                    setLoggedIn(true);
+                    history.push('/');
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                openAuthPopup(false);
+            });
+    }
+
+    function handleTokenCheck() {
+        if (localStorage.getItem('jwt')) {
+            const jwt = localStorage.getItem('jwt');
+            // проверяем токен пользователя
+            auth.checkToken(jwt)
+                .then((data) => {
+                    setUserName(data.data.email);
+                    setLoggedIn(true);
+                    history.push('/');
+                })
+                .catch((err) => console.log(err))
+        }
+    }
+
+    useEffect(() => {
+        handleTokenCheck();
+    },)
+
+    function handleLogout() {
+        localStorage.removeItem('jwt');
+        setLoggedIn(false);
+        history.push('/sign-in');
+    }
+
+
     return (
         <CurrentUserContext.Provider value={currentUser}>
-            <Header/>
-            <AuthForm title="Регистрация" authType="Зарегистрироваться"/>
-            <AuthForm  title="Вход" btnName="Войти"/>
-            <Main onEditProfile={openProfilePopup}
-                  onAddPlace={openPlacePopup}
-                  onEditAvatar={openAvatarPopup}
-                  onCardClick={changeSelectedCard}
-                  cards={cards}
-                  onCardLike={handleCardLike}
-                  onCardDelete={handleDeleteConfirm}
-            />
+            <Header authState={regStatus} onLogout={handleLogout} userName={userName}/>
+            <Switch>
+                <ProtectedRoute exact path="/" loggedIn={loggedIn} onEditProfile={openProfilePopup}
+                                onAddPlace={openPlacePopup}
+                                onEditAvatar={openAvatarPopup}
+                                onCardClick={changeSelectedCard}
+                                cards={cards}
+                                onCardLike={handleCardLike}
+                                onCardDelete={handleDeleteConfirm}
+                                onRender={handleRegStatus}
+                                component={Main}/>
 
-            <Footer />
+                <Route path="/sign-up">
+                    <Register onSignup={handleSignup} onRender={handleRegStatus}/>
+                </Route>
+                <Route path="/sign-in">
+                    <Login onSignin={handleSignin} onRender={handleRegStatus}/>
+                </Route>
+                <Route exact path="/">
+                    {loggedIn ? <Redirect to="/"/> : <Redirect to="/sign-up"/>}
+                </Route>
+            </Switch>
+            <Footer/>
 
-            <AuthPopup name="auth" isOpen={false} authType={true}/>
+            <InfoTooltip name="auth" isOpen={isAuthPopupOpen} authType={authStatus} onClose={closeAllPopups}/>
 
             <EditProfilePopup isOpen={isEditProfilePopupOpen}
                               onClose={closeAllPopups}

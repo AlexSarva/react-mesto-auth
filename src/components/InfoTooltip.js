@@ -1,4 +1,4 @@
-function AuthPopup(props) {
+function InfoTooltip(props) {
     const className = `popup popup_type_${props.name} ${props.isOpen && 'popup_opened'}`;
 
     return (
@@ -14,4 +14,4 @@ function AuthPopup(props) {
     )
 }
 
-export default AuthPopup;
+export default InfoTooltip;

@@ -37,6 +37,10 @@
 
 @import url(./blocks/header/header.css);
 @import url(./blocks/header/__logo/header__logo.css);
+@import url(./blocks/header/__status-container/header__status-container.css);
+@import url(./blocks/header/__auth-link/header__auth-link.css);
+@import url(./blocks/header/__username/header__username.css);
+@import url(./blocks/header/__exit-btn/header__exit-btn.css);
 
 @import url(./blocks/content/content.css);
 @import url(./blocks/profile/profile.css);
