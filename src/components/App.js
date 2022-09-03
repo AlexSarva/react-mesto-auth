@@ -13,7 +13,7 @@ import AddPlacePopup from './AddPlacePopup';
 import InfoTooltip from './InfoTooltip';
 import {Redirect, Route, Switch, useHistory} from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
-import auth from '../auth';
+import auth from '../utils/auth';
 import Register from './Register';
 import Login from './Login';
 
@@ -45,15 +45,17 @@ function App() {
     }
 
     useEffect(() => {
-        Promise.all([api.getInitialProfileInfo(), api.getInitialCards()])
-            .then(([userData, cards]) => {
-                setCurrentUser(userData);
-                setCards(cards);
-            })
-            .catch((err) => {
-                console.log(`Ошибка: ${err}`);
-            })
-    }, [])
+        if (loggedIn) {
+            Promise.all([api.getInitialProfileInfo(), api.getInitialCards()])
+                .then(([userData, cards]) => {
+                    setCurrentUser(userData);
+                    setCards(cards);
+                })
+                .catch((err) => {
+                    console.log(`Ошибка: ${err}`);
+                })
+        }
+    }, [loggedIn])
 
     function handleUpdateUser(userInfo) {
         api.patchProfileInfo(userInfo)
@@ -231,7 +233,6 @@ function App() {
         setLoggedIn(false);
         history.push('/sign-in');
     }
-
 
     return (
         <CurrentUserContext.Provider value={currentUser}>
