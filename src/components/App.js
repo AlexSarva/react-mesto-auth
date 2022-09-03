@@ -11,6 +11,7 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import AuthForm from './AuthForm';
+import AuthPopup from './AuthPopup';
 
 function App() {
 
@@ -164,17 +165,20 @@ function App() {
     return (
         <CurrentUserContext.Provider value={currentUser}>
             <Header/>
-            <AuthForm  title="Регистрация" btnName="Зарегистрироваться"/>
-            {/*<AuthForm  title="Вход" btnName="Войти"/>*/}
-            {/*<Main onEditProfile={openProfilePopup}*/}
-            {/*      onAddPlace={openPlacePopup}*/}
-            {/*      onEditAvatar={openAvatarPopup}*/}
-            {/*      onCardClick={changeSelectedCard}*/}
-            {/*      cards={cards}*/}
-            {/*      onCardLike={handleCardLike}*/}
-            {/*      onCardDelete={handleDeleteConfirm}*/}
-            {/*/>*/}
+            <AuthForm title="Регистрация" authType="Зарегистрироваться"/>
+            <AuthForm  title="Вход" btnName="Войти"/>
+            <Main onEditProfile={openProfilePopup}
+                  onAddPlace={openPlacePopup}
+                  onEditAvatar={openAvatarPopup}
+                  onCardClick={changeSelectedCard}
+                  cards={cards}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleDeleteConfirm}
+            />
+
             <Footer />
+
+            <AuthPopup name="auth" isOpen={false} authType={true}/>
 
             <EditProfilePopup isOpen={isEditProfilePopupOpen}
                               onClose={closeAllPopups}
